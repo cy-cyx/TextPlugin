@@ -1,0 +1,4 @@
+rootProject.name = "Plugin"
+include ':app'
+include ':dex'
+include ':basemodel'
