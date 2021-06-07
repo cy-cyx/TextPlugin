@@ -1,0 +1,86 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+
+    defaultConfig {
+        minSdkVersion 22
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+task _deleteOldDex(type: Delete, dependsOn: assemble) {
+    doFirst {
+        delete '/output'
+    }
+}
+
+task _makeJar(type: Jar, dependsOn: _deleteOldDex) {
+
+    doFirst {
+        // class文件路径
+        from "/build/intermediates/javac/debug/classes"
+
+        //设置生成jar文件所在的路径
+        def outFile = file(rootDir.getAbsolutePath() + "/dex1/output")
+        outFile.mkdirs()
+        destinationDir = outFile
+
+        // 生成jar名字
+        baseName "fixdex"
+
+        include {
+            if (it.isDirectory()) {
+                true
+            } else {
+                def name = it.name
+                name == "ThrowBug.class"
+            }
+        }
+    }
+}
+
+task _jarToDex(type: Exec, dependsOn: _makeJar) {
+
+    doFirst {
+        commandLine 'cmd'
+
+        def list = []
+        list.add("/c")
+        list.add("C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\build-tools\\30.0.3\\dx.bat")
+        list.add("--dex")
+        list.add("--output==D:\\project\\TextPlugin\\dex1\\output\\fixdex.dex")
+        list.add("D:\\project\\TextPlugin\\dex1\\output\\fixdex.jar")
+        args list
+    }
+}
+
+
+task getNewDex(dependsOn: [_jarToDex]) {
+    doFirst {
+        println "success!!,The generated dex is in dex1/output/fixdex.dex"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+}
