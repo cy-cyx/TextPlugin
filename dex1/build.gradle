@@ -33,7 +33,7 @@ task _makeJar(type: Jar, dependsOn: _deleteOldDex) {
 
     doFirst {
         // class文件路径
-        from "/build/intermediates/javac/debug/classes"
+        from "/build/intermediates/javac/debug/classes/"
 
         //设置生成jar文件所在的路径
         def outFile = file(rootDir.getAbsolutePath() + "/dex1/output")
@@ -42,15 +42,6 @@ task _makeJar(type: Jar, dependsOn: _deleteOldDex) {
 
         // 生成jar名字
         baseName "fixdex"
-
-        include {
-            if (it.isDirectory()) {
-                true
-            } else {
-                def name = it.name
-                name == "ThrowBug.class"
-            }
-        }
     }
 }
 
@@ -70,7 +61,7 @@ task _jarToDex(type: Exec, dependsOn: _makeJar) {
 }
 
 
-task getNewDex(dependsOn: [_jarToDex]) {
+task getNewDex(dependsOn: _jarToDex) {
     doFirst {
         println "success!!,The generated dex is in dex1/output/fixdex.dex"
     }

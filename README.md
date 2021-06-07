@@ -16,7 +16,15 @@ DexClassLoader加载apk中的class。
 
 **插件工程：** *TextPlugin/dex*
 
-#### 二、热修改（ClassLoader）
+#### 二、热修改（利用ClassLoader）
 
+**主体工程：** *TextPlugin/app1*
+
+**DEX修复工程：** *TextPlugin/dex1*
+
+热修复的类：*com/android/hotfix/ThrowBug.java*
+
+总结：ClassLoader中pathList是一个数组，热修复就是将修复的DexFile，塞到数组前面，到加载时，
+优先加载修复的dex，实现不发包就可以修复崩溃
 
 
