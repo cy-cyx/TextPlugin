@@ -25,24 +25,21 @@ android {
 
 task _deleteOldDex(type: Delete, dependsOn: assemble) {
     doFirst {
-        delete '/output'
+        println "删除上次"
     }
+    delete '/output'
 }
 
 task _makeJar(type: Jar, dependsOn: _deleteOldDex) {
+    // class文件路径
+    from "/build/intermediates/javac/debug/classes/"
 
-    doFirst {
-        // class文件路径
-        from "/build/intermediates/javac/debug/classes/"
+    //设置生成jar文件所在的路径
+    def outFile = file(rootDir.getAbsolutePath() + "/dex1/output")
+    destinationDir = outFile
 
-        //设置生成jar文件所在的路径
-        def outFile = file(rootDir.getAbsolutePath() + "/dex1/output")
-        outFile.mkdirs()
-        destinationDir = outFile
-
-        // 生成jar名字
-        baseName "fixdex"
-    }
+    // 生成jar名字
+    baseName "fixdex"
 }
 
 task _jarToDex(type: Exec, dependsOn: _makeJar) {
